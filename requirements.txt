@@ -1,0 +1,6 @@
+scikit-image
+opencv-python
+PyYAML
+albumentations
+pytorch-metric-learning
+mxnet

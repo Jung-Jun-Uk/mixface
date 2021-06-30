@@ -1,0 +1,21 @@
+arcface: 
+  s: 16.
+  m: 0.25  
+  easy_margin: False
+
+cosface:
+  s: 16.
+  m: 0.25
+
+sn-pair-loss:
+  s: 64.
+
+ms-loss:
+  scale_pos: 2
+  scale_neg: 40
+  use_miner: True
+
+mixface:
+  e: 1e-22
+  m: 0.5
+  easy_margin: False
