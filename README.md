@@ -60,14 +60,14 @@ We referred to [https://github.com/biubug6/Pytorch_Retinaface](https://github.co
 
 #### Training and test datasets on K-FACE 
 |Train ID|Accessories|Lux|Expression|Pose|#Image|Variance|
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|:------:|:---:|:---:|:---:|:---:|:---:|:---:|
 |[T1](https://github.com/Jung-Jun-Uk/insightKface_pytorch/blob/main/recognition/data/KFACE/kface.T1.yaml)|S001|Lux:1000|E1|C4-10|2,590|Very Low|
 |[T2](https://github.com/Jung-Jun-Uk/insightKface_pytorch/blob/main/recognition/data/KFACE/kface.T2.yaml)|S001-S002|Lux:400-1000|E01|C4-C10|46,620|Low|
 |[T3](https://github.com/Jung-Jun-Uk/insightKface_pytorch/blob/main/recognition/data/KFACE/kface.T3.yaml)|S001-S004|Lux:200-1000|E01-E02|C4-C13|654,160|Middle|
 |[T4](https://github.com/Jung-Jun-Uk/insightKface_pytorch/blob/main/recognition/data/KFACE/kface.T4.yaml)|S001-S006|Lux:40-1000|E01-E03|C1-C20|3,862,800|High|
 
 |Test ID |Accessories|Lux|Expression|Pose|#Pairs|Variance|
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|:------:|:---:|:---:|:---:|:---:|:---:|:---:|
 |[Q1](https://github.com/Jung-Jun-Uk/insightKface_pytorch/blob/main/recognition/data/KFACE/kface.Q1.txt)|S001|Lux:1000|E1|C4-10|1,000|Very Low|
 |[Q2](https://github.com/Jung-Jun-Uk/insightKface_pytorch/blob/main/recognition/data/KFACE/kface.Q2.txt)|S001-S002|Lux:400-1000|E01|C4-C10|100,000|Low|
 |[Q3](https://github.com/Jung-Jun-Uk/insightKface_pytorch/blob/main/recognition/data/KFACE/kface.Q3.txt)|S001-S004|Lux:200-1000|E01-E02|C4-C13|100,000|Middle|
