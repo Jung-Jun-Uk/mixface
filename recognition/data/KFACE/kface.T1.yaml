@@ -1,7 +1,8 @@
+# Your aligned dataset path
 data_path: /home/work/jju/data/kface-retinaface-112x112/
-#mtcnn_bbox_path: 'data/kface-mtcnn-bbox.json'
-test_idx_txt: 'data/kface-test-identity30.txt'
-test_pair_txt: 'data/kface-test-pair-verysmall-1k.txt'
+
+test_idx_txt: 'data/KFACE/kface-test-identity30.txt'
+test_pair_txt: 'data/KFACE/kface-test-pair-verysmall-1k.txt'
 
 # acs = accessories
 # eps = expression
