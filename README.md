@@ -59,21 +59,19 @@ python align_kfaces.py --ori_data_path '/data/FACE/KFACE/High' --detected_data_p
 We referred to [https://github.com/biubug6/Pytorch_Retinaface](https://github.com/biubug6/Pytorch_Retinaface).
 
 #### Training and test datasets on K-FACE 
-We already create the T1-T4 YAML file and Q1-Q4 .txt file. See the [KFACE]() forder
-
 |Train ID|Accessories|Lux|Expression|Pose|#Image|Variance|
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-|T1|S001|Lux:1000|E1|C4-10|2,590|Very Low|
-|T2|S001-S002|Lux:400-1000|E01|C4-C10|46,620|Low|
-|T3|S001-S004|Lux:200-1000|E01-E02|C4-C13|654,160|Middle|
-|T4|S001-S006|Lux:40-1000|E01-E03|C1-C20|3,862,800|High|
+|[T1](https://github.com/Jung-Jun-Uk/insightKface_pytorch/blob/main/recognition/data/KFACE/kface.T1.yaml)|S001|Lux:1000|E1|C4-10|2,590|Very Low|
+|[T2]((https://github.com/Jung-Jun-Uk/insightKface_pytorch/blob/main/recognition/data/KFACE/kface.T2.yaml))|S001-S002|Lux:400-1000|E01|C4-C10|46,620|Low|
+|[T3]((https://github.com/Jung-Jun-Uk/insightKface_pytorch/blob/main/recognition/data/KFACE/kface.T3.yaml))|S001-S004|Lux:200-1000|E01-E02|C4-C13|654,160|Middle|
+|[T4]((https://github.com/Jung-Jun-Uk/insightKface_pytorch/blob/main/recognition/data/KFACE/kface.T4.yaml))|S001-S006|Lux:40-1000|E01-E03|C1-C20|3,862,800|High|
 
-|Test ID |Accessories|Lux|Expression|Pose|#Pairs|Variance|
+|Test ID |Accessories|Lux|Expression|Pose|#Image|Variance|
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-|Q1|S001|Lux:1000|E1|C4-10|2,590|Very Low|
-|Q2|S001-S002|Lux:400-1000|E01|C4-C10|46,620|Low|
-|Q3|S001-S004|Lux:200-1000|E01-E02|C4-C13|654,160|Middle|
-|Q4|S001-S006|Lux:40-1000|E01-E03|C1-C20|3,862,800|High|
+|[Q1](https://github.com/Jung-Jun-Uk/insightKface_pytorch/blob/main/recognition/data/KFACE/kface.Q1.txt)|S001|Lux:1000|E1|C4-10|2,590|Very Low|
+|[Q2](https://github.com/Jung-Jun-Uk/insightKface_pytorch/blob/main/recognition/data/KFACE/kface.Q2.txt)|S001-S002|Lux:400-1000|E01|C4-C10|46,620|Low|
+|[Q3](https://github.com/Jung-Jun-Uk/insightKface_pytorch/blob/main/recognition/data/KFACE/kface.Q3.txt)|S001-S004|Lux:200-1000|E01-E02|C4-C13|654,160|Middle|
+|[Q4](https://github.com/Jung-Jun-Uk/insightKface_pytorch/blob/main/recognition/data/KFACE/kface.Q4.txt)|S001-S006|Lux:40-1000|E01-E03|C1-C20|3,862,800|High|
 
 ### MS1M-RetinaFace
 MS1M-RetinaFace download link: [The Lightweight Face Recognition Challenge & Workshop](https://github.com/deepinsight/insightface/tree/master/challenges/iccv19-lfr).
