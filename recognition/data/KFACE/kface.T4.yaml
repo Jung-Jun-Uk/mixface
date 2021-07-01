@@ -3,7 +3,7 @@
 data_path: /data/data_server/jju/datasets/FACE/kface-retinaface-112x112/
 
 test_idx_txt: 'data/KFACE/kface-test-identity30.txt'
-test_pair_txt: 'data/KFACE/kface-test-pair-large-100k.txt'
+test_pair_txt: 'data/KFACE/kface.Q4.txt'
 
 # acs = accessories
 # eps = expression

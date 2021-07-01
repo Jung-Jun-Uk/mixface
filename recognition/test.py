@@ -196,14 +196,7 @@ def inference(opt, device):
         model = torch.nn.DataParallel(model)
 
     if opt.dataset == 'kface':    
-        kevaluation(model, testloader, device, dataset.test_pair_txt, save_deepfeatures, is_training=False)    
-        
-        # if all Q1-Q4
-        #test_pair_txt = ['kface-test-pair-verylow-1k.txt', 'kface-test-pair-low-100k.txt', 'kface-test-pair-middle-100k.txt', 'kface-test-pair-large-100k.txt']        
-        #for path in test_pair_txt:        
-        #    path = os.path.join('face_analysis/data', path)                
-        #    kevaluation(model, testloader, device, path, save_deepfeatures, is_training=False)
-
+        kevaluation(model, testloader, device, dataset.test_pair_txt, save_deepfeatures, is_training=False)        
     elif opt.dataset == 'face':
         vacc, vth = evaluation(model, testloader, device)
     elif opt.dataset == 'merge':
@@ -216,7 +209,7 @@ def parser():
     parser.add_argument('--dataset'           , default='kface', help='kface/face/merge')    
     parser.add_argument('--model'             , default='iresnet-34', help='iresnet-34 or backbone-50-ir_se')
     parser.add_argument('--head'              , default='arcface', help='adacos, fixcos, ms-loss')
-    parser.add_argument('--data_cfg', type=str, default='data/kface.large.yaml', help='data yaml path')
+    parser.add_argument('--data_cfg', type=str, default='data/KFACE/kface.T4.yaml', help='data yaml path')
 
     parser.add_argument('--workers'           , type=int, default=4)
     parser.add_argument('--batch_size'        , type=int, default=512)
