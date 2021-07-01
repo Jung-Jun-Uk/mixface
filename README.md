@@ -75,7 +75,7 @@ We referred to [https://github.com/biubug6/Pytorch_Retinaface](https://github.co
 |[Q3](https://github.com/Jung-Jun-Uk/insightKface_pytorch/blob/main/recognition/data/KFACE/kface.Q3.txt)|A1-4|200-1000|E1-2|C4-13|100,000|Middle|
 |[Q4](https://github.com/Jung-Jun-Uk/insightKface_pytorch/blob/main/recognition/data/KFACE/kface.Q4.txt)|A1-6|40-1000|E1-3|C1-20|100,000|High|
 
-### MS1M-RetinaFace
+### [MS1M-RetinaFace](https://arxiv.org/abs/1905.00641) (MS1M-R)
 MS1M-RetinaFace download link: [The Lightweight Face Recognition Challenge & Workshop](https://github.com/deepinsight/insightface/tree/master/challenges/iccv19-lfr).
 
 We referred to [https://github.com/deepinsight/insightface](https://github.com/deepinsight/insightface).
@@ -90,12 +90,49 @@ python rec2image.py --include '/data/FACE/ms1m-retinaface-t1/' --output 'MS1M-Re
 
 ## Inference
 
-### Pretrained Model
+After downloading the pretrained model, run `test.py`.
 
+### Pretrained Model
+For all experiments, [ResNet-34](https://arxiv.org/abs/1512.03385) was chosen as the baseline backbone.
+
+#### The model was trained on KFACE
+|Head&Loss|Q1|Q2|Q3|Q4|Download Link|
+|:---:|:---:|:---:|:---:|:---:|:---:|
+|ArcFace (s=16, m=0.25)|99.50|95.33|86.60|79.42|-|
+|SN-pair (s=64)|99.20|95.01|91.84|89.74|-|
+|MixFace (e=1e-22)|**100**|**96.37**|**92.36**|**89.80**|-|
 
 ```bash
-cd face_analysis
+cd recognition
 
 # example
-python test.py --name 'mixface_1e-22-m0.25' --wname 'best' --dataset 'kface'
+python test.py --name 'mixface_1e-22-m0.25' --wname 'best' --dataset 'kface' --data_cfg 'data/KFACE/kface.T4.yaml'
+```
+
+#### The model was trained on MS1M-R
+|Head&Loss|Q2|Q3|Q4|LFW|CFP-FP|AgeDB-30|Download Link|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|ArcFace (s=64, m=0.5)|**98.71**|**86.60**|**82.03**|**99.80**|**98.41**|**98.80**|-|
+|SN-pair (s=64)|92.85|76.36|70.08|99.55|96.20|95.46|-|
+|MixFace (e=1e-22)|97.36|82.89|76.95|99.68|97.74|97.25|-|
+
+```bash
+cd recognition
+
+# example
+python test.py --name 'mixface_1e-22-m0.25' --wname 'best' --dataset 'kface' --data_cfg 'data/face.all.yaml'
+```
+
+#### The model was trained on MS1M-R+T4
+|Head&Loss|Q2|Q3|Q4|LFW|CFP-FP|AgeDB-30|Download Link|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|ArcFace (s=8, m=0.5)|76.58|73.13|71.38|99.46|**96.75**|93.83|-|
+|SN-pair (s=64)|98.37|94.98|93.33|99.45|94.90|93.45|-|
+|MixFace (e=1e-22)|**99.27**|**96.85**|**94.79**|**99.53**|96.32|**95.56**|-|
+
+```bash
+cd recognition
+
+# example
+python test.py --name 'mixface_1e-22-m0.25' --wname 'best' --dataset 'kface' --data_cfg 'data/merge.yaml'
 ```
