@@ -129,7 +129,7 @@ dmypy.json
 .pyre/
 
 recognition/runs/
-recognition/data/
+*.pickle
 
 
 

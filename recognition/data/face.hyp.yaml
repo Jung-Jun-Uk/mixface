@@ -1,0 +1,14 @@
+# hyperparameter setting
+lr: 0.1 # initial learning rate
+weight_decay: 0.0005  # optimizer weight decay 5e-4
+momentum: 0.9  # SGD momentum/Adam beta1
+milestones: [12,15,18]
+#milestones: [6,8,9]
+gamma: 0.1
+warmup_epochs: 3.0  # warmup epochs (fractions ok)
+#warmup_momentum: 0.8  # warmup initial momentum
+#warmup_bias_lr: 0.1  # warmup initial bias lr
+
+
+
+

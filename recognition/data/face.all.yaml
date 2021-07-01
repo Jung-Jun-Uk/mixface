@@ -1,0 +1,10 @@
+## ms1m/retinaface config
+ms1m_path: /home/work/jju/data/MS1M-RetinaFace
+bin_path: /home/work/jju/data/ms1m-retinaface-t1/lfw.bin
+#bin_path: /home/work/jju/data/ms1m-retinaface-t1/cfp_fp.bin
+#bin_path: /home/work/jju/data/ms1m-retinaface-t1/agedb_30.bin
+preprocessed_file: data/ms1m-retinaface-t1.pickle 
+
+min_img: 0
+img_size: 112
+double: False
