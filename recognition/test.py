@@ -178,16 +178,16 @@ def inference(opt, device):
     
     model = build_models(opt.model).to(device)    
     ckpt = torch.load(opt.weights, map_location=device)  # load checkpoint
-    print(ckpt.keys())
+    #print(ckpt.keys())
     
     #temp = ckpt['headandloss'].head
-    #ckpt['headandloss'].head = MixFace(in_feature=512, out_feature=350, e=1e-22, m=0.25, easy_margin=False)
+    #ckpt['headandloss'].head = MixFace(in_feature=512, out_feature=350, e=1e-22, m=0.5, easy_margin=False)
     #ckpt['headandloss'].head.weight = temp.weight
 
     print(ckpt['headandloss'])
-    #print(ckpt['headandloss'].head)
+    print(ckpt['headandloss'].head)
     
-    #torch.save(ckpt, 'face_analysis/runs/mixface_1e-22-m0.25/weights/' + opt.wname + '.pt')
+    #torch.save(ckpt, 'runs/face.mixface.1e-22m0.5/weights/' + opt.wname + '.pt')
 
     model_state_dict = ckpt['backbone'].float().state_dict()
     model.load_state_dict(model_state_dict, strict=False)
@@ -200,14 +200,17 @@ def inference(opt, device):
     elif opt.dataset == 'face':
         vacc, vth = evaluation(model, testloader, device)
     elif opt.dataset == 'merge':
-        pass
+        testloader1, testloader2 = testloader
+        vacc, vth = evaluation(model, testloader1, device)
+        kevaluation(model, testloader2, device, dataset.test_pair_txt, save_deepfeatures, is_training=False)
+        
 
 def parser():    
     parser = argparse.ArgumentParser(description='Face Test')
     parser.add_argument('--weights', type=str , default='', help='initial weights path')
     parser.add_argument('--wname'  , type=str , default='best', help='initial weights name: best or last')
     parser.add_argument('--dataset'           , default='kface', help='kface/face/merge')    
-    parser.add_argument('--model'             , default='iresnet-34', help='iresnet-34 or backbone-50-ir_se')
+    parser.add_argument('--model'             , default='iresnet-34', help='iresnet-34')
     parser.add_argument('--head'              , default='arcface', help='adacos, fixcos, ms-loss')
     parser.add_argument('--data_cfg', type=str, default='data/KFACE/kface.T4.yaml', help='data yaml path')
 
@@ -223,14 +226,13 @@ def parser():
 
 if __name__ == "__main__":
     opt = parser()
-    opt.global_rank = -1
-    opt.current_dir = os.path.dirname(os.path.realpath(__file__))
-    opt.save_dir = Path(opt.current_dir) / opt.project / opt.name    
-    
-    assert os.path.isdir(opt.save_dir), 'ERROR: --project_directory does not exist'
-    opt.weights = opt.save_dir / 'weights' / (opt.wname + '.pt')
-    assert os.path.isfile(opt.weights), 'ERROR: --best.pt does not exist'
-    
+    opt.global_rank = -1    
+    opt.save_dir = Path(opt.project) / opt.name    
     #opt.save_dir = Path(opt.project) / opt.dataset / (opt.model + '-' + opt.head) / opt.name 
+    #assert os.path.isdir(opt.save_dir), 'ERROR: --project_directory does not exist'    
+    if opt.weights[-3:] != '.pt':
+        opt.weights = opt.save_dir / 'weights' / (opt.wname + '.pt')     
+    assert os.path.isfile(opt.weights), 'ERROR: --weight path does not exist'
+        
     device = select_device(opt.device, batch_size=opt.batch_size, rank=opt.global_rank)
     inference(opt, device)

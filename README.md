@@ -18,7 +18,7 @@ pip install -r requirements.txt
 ## Data prepration
 
 ### K-FACE Database
-K-FACE [AI-hub](https://aihub.or.kr/).
+K-FACE [AI-hub](http://www.aihub.or.kr/aidata/73).
 
 Detail configuration about K-FACE is provided in the paper below.
 
@@ -96,11 +96,11 @@ After downloading the pretrained model, run `test.py`.
 For all experiments, [ResNet-34](https://arxiv.org/abs/1512.03385) was chosen as the baseline backbone.
 
 #### The model was trained on KFACE
-|Head&Loss|Q1|Q2|Q3|Q4|Download Link|
-|:---:|:---:|:---:|:---:|:---:|:---:|
-|ArcFace (s=16, m=0.25)|99.50|95.33|86.60|79.42|-|
-|SN-pair (s=64)|99.20|95.01|91.84|89.74|-|
-|MixFace (e=1e-22)|**100**|**96.37**|**92.36**|**89.80**|-|
+|Head&Loss|Q1|Q2|Q3|Q4|
+|:---:|:---:|:---:|:---:|:---:|
+|[ArcFace (s=16, m=0.25)](https://koreatechackr-my.sharepoint.com/:u:/g/personal/rnans33_koreatech_ac_kr/EZ6jsWQ49hhPqvx2TJYsMtsBj2tggTRBuqLtFW6nEaERgw?e=Frg8Z1)|99.50|95.33|86.60|79.42|-|
+|[SN-pair (s=64)](https://koreatechackr-my.sharepoint.com/:u:/g/personal/rnans33_koreatech_ac_kr/Edch8gnpE2pDpE8OpzQ9OBEBCNNSlA8GV7iSLAvghVoVwQ?e=GRXyt4)|99.20|95.01|91.84|89.74|
+|[MixFace (e=1e-22, m=0.25)](https://koreatechackr-my.sharepoint.com/:u:/g/personal/rnans33_koreatech_ac_kr/EeVMBzPFGjNIrXDZJ9At33YBEp8UjLAdkge0koCOWeOrFg)|**100**|**96.37**|**92.36**|**89.80**|
 
 ```bash
 cd recognition
@@ -110,11 +110,11 @@ python test.py --name 'mixface_1e-22-m0.25' --wname 'best' --dataset 'kface' --d
 ```
 
 #### The model was trained on MS1M-R
-|Head&Loss|Q2|Q3|Q4|LFW|CFP-FP|AgeDB-30|Download Link|
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-|ArcFace (s=64, m=0.5)|**98.71**|**86.60**|**82.03**|**99.80**|**98.41**|**98.80**|-|
-|SN-pair (s=64)|92.85|76.36|70.08|99.55|96.20|95.46|-|
-|MixFace (e=1e-22)|97.36|82.89|76.95|99.68|97.74|97.25|-|
+|Head&Loss|Q2|Q3|Q4|LFW|CFP-FP|AgeDB-30|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|[ArcFace (s=64, m=0.5)](https://koreatechackr-my.sharepoint.com/:u:/g/personal/rnans33_koreatech_ac_kr/EYVV1dGA11pHtMU224i3rRYB_dUPdJB0VsHxTiOjz_h5YA?e=OioJXq)|**98.71**|**86.60**|**82.03**|**99.80**|**98.41**|**98.80**|
+|[SN-pair (s=64)](https://koreatechackr-my.sharepoint.com/:u:/g/personal/rnans33_koreatech_ac_kr/EYMHsaIBxU5KsICPRa_y8vkBGQmM8f81o7YpuNkoEgr11w?e=uV01Vp)|92.85|76.36|70.08|99.55|96.20|95.46|
+|[MixFace (e=1e-22, m=0.5)](https://koreatechackr-my.sharepoint.com/:u:/g/personal/rnans33_koreatech_ac_kr/EQ-8bjuohCdCuPLMW__R2yMBaLUBH8J7s3j_gVfk6SQ6qA?e=dScyfb)|97.36|82.89|76.95|99.68|97.74|97.25|
 
 ```bash
 cd recognition
@@ -124,11 +124,11 @@ python test.py --name 'mixface_1e-22-m0.25' --wname 'best' --dataset 'kface' --d
 ```
 
 #### The model was trained on MS1M-R+T4
-|Head&Loss|Q2|Q3|Q4|LFW|CFP-FP|AgeDB-30|Download Link|
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-|ArcFace (s=8, m=0.5)|76.58|73.13|71.38|99.46|**96.75**|93.83|-|
-|SN-pair (s=64)|98.37|94.98|93.33|99.45|94.90|93.45|-|
-|MixFace (e=1e-22)|**99.27**|**96.85**|**94.79**|**99.53**|96.32|**95.56**|-|
+|Head&Loss|Q2|Q3|Q4|LFW|CFP-FP|AgeDB-30|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|[ArcFace (s=8, m=0.25)](https://koreatechackr-my.sharepoint.com/:u:/g/personal/rnans33_koreatech_ac_kr/EVebAdOEAVVLmasSyc0DzQYBZMCtF67eRLnYQr3iGQuKZA?e=lcwtYV)|76.58|73.13|71.38|99.46|**96.75**|93.83|
+|[SN-pair (s=64)](https://koreatechackr-my.sharepoint.com/:u:/g/personal/rnans33_koreatech_ac_kr/EQ6JQycpq9pMhAR0czQ4ihoBrDhRBCZ1JVImmg5Dmzq42w?e=WaE72e)|98.37|94.98|93.33|99.45|94.90|93.45|
+|[MixFace (e=1e-22, m=0.5)](https://koreatechackr-my.sharepoint.com/:u:/g/personal/rnans33_koreatech_ac_kr/EQae8dv9wTJFn3ecSQmBRrcBFh1as-AmlEn2xk6puisVBA?e=Sif7eN)|**99.27**|**96.85**|**94.79**|**99.53**|96.32|**95.56**|
 
 ```bash
 cd recognition
@@ -136,3 +136,5 @@ cd recognition
 # example
 python test.py --name 'mixface_1e-22-m0.25' --wname 'best' --dataset 'kface' --data_cfg 'data/merge.yaml'
 ```
+
+## Training

@@ -89,11 +89,13 @@ class IResNet(nn.Module):
                  zero_init_residual=False,
                  groups=1,
                  width_per_group=64,
-                 replace_stride_with_dilation=None):
+                 replace_stride_with_dilation=None,
+                 use_dropout=True):
         super(IResNet, self).__init__()
 
         self.inplanes = 64
         self.dilation = 1
+        self.use_dropout=use_dropout
         if replace_stride_with_dilation is None:
             # each element in the tuple indicates if we should replace
             # the 2x2 stride with a dilated convolution instead
@@ -134,7 +136,8 @@ class IResNet(nn.Module):
             512 * block.expansion,
             eps=1e-05,
         )
-        self.dropout = nn.Dropout(p=0.4, inplace=True)
+        if self.use_dropout:
+            self.dropout = nn.Dropout(p=0.4, inplace=True)
         self.fc = nn.Linear(512 * block.expansion * self.fc_scale,
                             num_features)
         self.features = nn.BatchNorm1d(
@@ -198,7 +201,9 @@ class IResNet(nn.Module):
 
         x = self.bn2(x)
         x = torch.flatten(x, 1)
-        x = self.dropout(x)
+
+        if self.use_dropout:
+            x = self.dropout(x) # if you train with the metric loss(e.g. sn-pair, n-pair) on MS1M-R or MS1M-R+T4, don't use dropout
         x = self.fc(x)
         x = self.features(x)
 

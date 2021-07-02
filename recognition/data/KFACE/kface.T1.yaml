@@ -1,5 +1,5 @@
 # Your aligned dataset path
-data_path: /home/work/jju/data/kface-retinaface-112x112/
+data_path: /data/data_server/jju/datasets/FACE/kface-retinaface-112x112/
 
 test_idx_txt: 'data/KFACE/kface-test-identity30.txt'
 test_pair_txt: 'data/KFACE/kface.Q1.txt'

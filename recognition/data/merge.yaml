@@ -1,17 +1,17 @@
 ## ms1m/retinaface config
-ms1m_path: /home/work/jju/data/MS1M-RetinaFace
-bin_path: /home/work/jju/data/ms1m-retinaface-t1/lfw.bin
+ms1m_path: /data/data_server/jju/datasets/FACE/MS1M-RetinaFace
+bin_path: /data/data_server/jju/datasets/FACE/ms1m-retinaface-t1/lfw.bin
 #bin_path: /home/work/jju/data/ms1m-retinaface-t1/cfp_fp.bin
 #bin_path: /home/work/jju/data/ms1m-retinaface-t1/agedb_30.bin
 ms1m_preprocessed_file: data/ms1m-retinaface-t1.pickle 
 
 
 # kface/retinaface config
-data_path: /home/work/jju/data/kface-retinaface-112x112/
+data_path: /data/data_server/jju/datasets/FACE/kface-retinaface-112x112/
 #mtcnn_bbox_path: 'data/kface-mtcnn-bbox.json'
-test_idx_txt: 'data/kface-test-identity30.txt'
-test_pair_txt: 'data/kface-test-pair-Large-100k.txt'
-kface_preprocessed_file: data/kface-retinaface-large.pickle 
+test_idx_txt: 'data/KFACE/kface-test-identity30.txt'
+test_pair_txt: 'data/KFACE/kface.Q4.txt'
+kface_preprocessed_file: data/KFACE/kface-retinaface-large.pickle 
 # acs = accessories
 # eps = expression
 acs: s1~6

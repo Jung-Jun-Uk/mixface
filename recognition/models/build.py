@@ -1,8 +1,8 @@
 import yaml
 
-from .backbone import Backbone
+#from .backbone import Backbone
 from .iresnet import iresnet
-from .head import ArcMarginProduct, CosineMarginProduct, SimilarityBasedNpairLoss, Mixing_base2
+from .head import ArcMarginProduct, CosineMarginProduct, SimilarityBasedNpairLoss, MixFace
 from pytorch_metric_learning import miners, losses
 import torch
 from torch import nn
@@ -10,11 +10,8 @@ import torch.nn.functional as F
 
 
 def build_models(model_name):
-    model_args = model_name.split('-')
-    if model_args[0] == 'backbone':
-        _, net_depth, net_mode = model_args
-        model = Backbone(num_layers=int(net_depth), drop_ratio=0.6, mode=net_mode)
-    elif model_args[0] == 'iresnet':
+    model_args = model_name.split('-')    
+    if model_args[0] == 'iresnet':
         _, net_depth = model_args
         model = iresnet(num_layers=int(net_depth))
     return model

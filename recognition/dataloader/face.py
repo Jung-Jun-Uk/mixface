@@ -53,29 +53,20 @@ class FaceDatasets(data.Dataset):
         print("Number of classes       : ", self.num_classes)
 
         if mode == 'train':
-            """ self.transform = transforms.Compose([
-                #transforms.Resize((img_size,img_size), interpolation=Image.BICUBIC),
+            self.transform = transforms.Compose([
+                transforms.Resize((img_size,img_size), interpolation=Image.BICUBIC),
                 transforms.RandomHorizontalFlip(),
                 transforms.ToTensor(),
                 transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-            ]) """
-            # more faster
-            self.transform = A.Compose([
-                A.HorizontalFlip(),
-                Ap.transforms.ToTensor(normalize={'mean' : [0.485, 0.456, 0.406], 'std':[0.229, 0.224, 0.225]}),
             ])
-
+            
         else:
-            """ self.transform = transforms.Compose([
-                #transforms.Resize((img_size,img_size), interpolation=Image.BICUBIC),                    
+            self.transform = transforms.Compose([
+                transforms.Resize((img_size,img_size), interpolation=Image.BICUBIC),                    
                 transforms.ToTensor(),
                 transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-            ]) """
-            # more faster
-            self.transform = A.Compose([
-                A.HorizontalFlip(),
-                Ap.transforms.ToTensor(normalize={'mean' : [0.485, 0.456, 0.406], 'std':[0.229, 0.224, 0.225]}),
             ])
+            
 
     def differ_choice(self, img_path, label):
         img_lst = self.info_dict[label]
@@ -88,20 +79,15 @@ class FaceDatasets(data.Dataset):
         info = self.information[index]
         img_path = info['img_path']
         label = info['label']
-        #img = Image.open(img_path)
-        img = cv2.imread(img_path)
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        img = Image.open(img_path)        
         if self.mode == 'train':
-            data = self.transform(image=img)
+            data = self.transform(img)
             if self.double:
-                img_path2 = self.differ_choice(img_path, label)
-                img2 = cv2.imread(img_path2)
-                img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2RGB)
-                data2 = self.transform(image=img2)
-                return data['image'], data2['image'], label
-            return data['image'], label    
-            #data = self.transform(img)
-            #return data, label        
+                img_path2 = self.differ_choice(img_path, label)                
+                img2 = Image.open(img_path2)
+                data2 = self.transform(img2)
+                return data, data2, label
+            return data, label                     
         else:
             data, hfdata = self.transform(img), self.transform(TF.hflip(img))
             return data, hfdata, label, info['img_path']
