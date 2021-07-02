@@ -59,7 +59,7 @@ cd detection
 
 python align_kfaces.py --ori_data_path '/data/FACE/KFACE/High' --detected_data_path 'kface_retina_align_112x112'
 ```
-We referred to [https://github.com/biubug6/Pytorch_Retinaface](https://github.com/biubug6/Pytorch_Retinaface).
+The detection module referenced [https://github.com/biubug6/Pytorch_Retinaface](https://github.com/biubug6/Pytorch_Retinaface).
 
 #### Training and test datasets on K-FACE 
 |Train ID|Accessories|Lux|Expression|Pose|#Image|Variance|
@@ -76,9 +76,12 @@ We referred to [https://github.com/biubug6/Pytorch_Retinaface](https://github.co
 |[Q4](https://github.com/Jung-Jun-Uk/insightKface_pytorch/blob/main/recognition/data/KFACE/kface.Q4.txt)|A1-6|40-1000|E1-3|C1-20|100,000|High|
 
 ### [MS1M-RetinaFace](https://arxiv.org/abs/1905.00641) (MS1M-R)
-MS1M-RetinaFace download link: [The Lightweight Face Recognition Challenge & Workshop](https://github.com/deepinsight/insightface/tree/master/challenges/iccv19-lfr).
+MS1M-RetinaFace download link: 
 
-We referred to [https://github.com/deepinsight/insightface](https://github.com/deepinsight/insightface).
+1. [The Lightweight Face Recognition Challenge & Workshop](https://github.com/deepinsight/insightface/tree/master/challenges/iccv19-lfr).
+
+2. [https://github.com/deepinsight/insightface/wiki/Dataset-Zoo](https://github.com/deepinsight/insightface/wiki/Dataset-Zoo)
+
 ```bash
 #Preprocess 'train.rec' and 'train.idx' to 'jpg'
 
@@ -87,6 +90,9 @@ cd detection
 
 python rec2image.py --include '/data/FACE/ms1m-retinaface-t1/' --output 'MS1M-RetinaFace'
 ```
+
+The script referenced [https://github.com/deepinsight/insightface](https://github.com/deepinsight/insightface).
+
 
 ## Inference
 
