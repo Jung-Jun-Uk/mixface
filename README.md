@@ -102,7 +102,9 @@ For all experiments, [ResNet-34](https://arxiv.org/abs/1512.03385) was chosen as
 |[SN-pair (s=64)](https://koreatechackr-my.sharepoint.com/:u:/g/personal/rnans33_koreatech_ac_kr/Edch8gnpE2pDpE8OpzQ9OBEBCNNSlA8GV7iSLAvghVoVwQ?e=GRXyt4)|99.20|95.01|91.84|89.74|
 |[MixFace (e=1e-22, m=0.25)](https://koreatechackr-my.sharepoint.com/:u:/g/personal/rnans33_koreatech_ac_kr/EeVMBzPFGjNIrXDZJ9At33YBEp8UjLAdkge0koCOWeOrFg)|**100**|**96.37**|**92.36**|**89.80**|
 
-Note: For ArcFace, we tested (s,m)={(16,0.5), (32,0.25), (64,0.25), (32,0.5), (64,0.5)}, but the model was not trained properly.
+Note: 
+
++ For ArcFace, we tested (s,m)={(16,0.5), (32,0.25), (64,0.25), (32,0.5), (64,0.5)}, but the model was not trained properly So, we apply (s,m)=(16,0.25).
 
 ```bash
 cd recognition
