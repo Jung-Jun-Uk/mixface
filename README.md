@@ -120,6 +120,10 @@ python test.py --weights 'kface.mixface.1e-22m0.25.best.pt' --dataset 'kface' --
 |[SN-pair (s=64)](https://koreatechackr-my.sharepoint.com/:u:/g/personal/rnans33_koreatech_ac_kr/EYMHsaIBxU5KsICPRa_y8vkBGQmM8f81o7YpuNkoEgr11w?e=uV01Vp)|92.85|76.36|70.08|99.55|96.20|95.46|
 |[MixFace (e=1e-22, m=0.5)](https://koreatechackr-my.sharepoint.com/:u:/g/personal/rnans33_koreatech_ac_kr/EQ-8bjuohCdCuPLMW__R2yMBaLUBH8J7s3j_gVfk6SQ6qA?e=dScyfb)|97.36|82.89|76.95|99.68|97.74|97.25|
 
+Note: 
+
++ When you train with the metric loss(e.g. SN-pair, N-pair, etc) on MS1M-R, don't use the dropout function of line number 204 of the [code](https://github.com/Jung-Jun-Uk/insightKface_pytorch/blob/main/recognition/models/iresnet.py) because the model is not trained properly.
+
 ```bash
 cd recognition
 
@@ -133,6 +137,10 @@ python test.py --weights 'face.mixface.1e-22m0.5.best.pt' --dataset 'face' --dat
 |[ArcFace (s=8, m=0.25)](https://koreatechackr-my.sharepoint.com/:u:/g/personal/rnans33_koreatech_ac_kr/EVebAdOEAVVLmasSyc0DzQYBZMCtF67eRLnYQr3iGQuKZA?e=lcwtYV)|76.58|73.13|71.38|99.46|**96.75**|93.83|
 |[SN-pair (s=64)](https://koreatechackr-my.sharepoint.com/:u:/g/personal/rnans33_koreatech_ac_kr/EQ6JQycpq9pMhAR0czQ4ihoBrDhRBCZ1JVImmg5Dmzq42w?e=WaE72e)|98.37|94.98|93.33|99.45|94.90|93.45|
 |[MixFace (e=1e-22, m=0.5)](https://koreatechackr-my.sharepoint.com/:u:/g/personal/rnans33_koreatech_ac_kr/EQae8dv9wTJFn3ecSQmBRrcBFh1as-AmlEn2xk6puisVBA?e=Sif7eN)|**99.27**|**96.85**|**94.79**|**99.53**|96.32|**95.56**|
+
+Note: 
++ For ArcFace, we tested (s,m)={(8, 0.5), (16, 0.25), (16,0.5), (32,0.25), (64,0.25), (32,0.5), (64,0.5)}, but the model was not trained properly So, we apply (s,m)=(8,0.25).
++ When you train with the metric loss(e.g. SN-pair, N-pair, etc) on MS1M-R+T4, don't use the dropout function of line number 204 of the [code](https://github.com/Jung-Jun-Uk/insightKface_pytorch/blob/main/recognition/models/iresnet.py) because the model is not trained properly. 
 
 ```bash
 cd recognition
