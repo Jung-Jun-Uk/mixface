@@ -118,67 +118,6 @@ class SimilarityBasedNpairLoss(nn.Module):
         return self.s * output, re_labels
 
 
-class Mixing_base2(nn.Module):
-    """
-
-    """
-    def __init__(self, in_feature=128, out_feature=10575, e=1e-5, m=0.50, easy_margin=False):
-        super(Mixing_base2, self).__init__()
-        self.in_feature = in_feature
-        self.out_feature = out_feature
-        
-        self.e = e
-        self.m = m
-        self.weight = Parameter(torch.Tensor(out_feature, in_feature))        
-        nn.init.xavier_uniform_(self.weight)
-
-        self.easy_margin = easy_margin
-        self.cos_m = math.cos(m)
-        self.sin_m = math.sin(m)
-
-        # make the function cos(theta+m) monotonic decreasing while theta in [0°,180°]
-        self.th = math.cos(math.pi - m)
-        self.mm = math.sin(math.pi - m) * m
-
-    def forward(self, x, labels):
-        # cos(theta)
-        x = F.normalize(x)
-        cosine = F.linear(x, F.normalize(self.weight))
-        
-        # cos(theta + m)
-        sine = torch.sqrt(1.0 - torch.pow(cosine, 2))
-        phi = (cosine * self.cos_m - sine * self.sin_m) 
-        phi = phi.type(cosine.type()) # cast a half tensor type for torch.cuda.amp
-
-        if self.easy_margin:
-            phi = torch.where(cosine > 0, phi, cosine)
-        else:
-            phi = torch.where((cosine - self.th) > 0, phi, cosine - self.mm)
-        
-        #one_hot = torch.zeros(cosine.size(), device='cuda' if torch.cuda.is_available() else 'cpu')
-        one_hot = torch.zeros_like(cosine)
-        one_hot.scatter_(1, labels.view(-1, 1), 1)
-        output = (one_hot * phi) + ((1.0 - one_hot) * cosine)
-
-        s1 = (1 / math.cos(self.m)) * (math.log(self.out_feature-1) + math.log(1-self.e) - math.log(self.e))
-        output = output * s1
-
-        sp, sn = convert_label_to_similarity(x, labels)        
-        num_sn = len(sn)
-        re_labels = torch.zeros_like(sp).long()
-
-        sp = sp.unsqueeze(1)
-        sn = sn.unsqueeze(0)
-
-        one = torch.ones_like(sp)
-        sn = one * sn
-
-        s2 = (math.log(num_sn) + math.log(1-self.e) - math.log(self.e))
-        output_pair = torch.cat((sp, sn), dim=1) * s2
-        
-        return output, output_pair, re_labels
-
-
 class MixFace(nn.Module):
     """
 

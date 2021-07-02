@@ -153,7 +153,7 @@ def evaluation(model, eval_loader, device):
             hfdf1   = model(hfdata1)
             df2    = model(data2)
             hfdf2   = model(hfdata2)
-
+            
             f1  = torch.cat((df1, hfdf1), 1)
             f2  = torch.cat((df2, hfdf2), 1)
 
@@ -173,22 +173,12 @@ def inference(opt, device):
     cuda = device.type != 'cpu'
     
     dataset = load_datasets(opt.dataset, opt.data_cfg, opt.batch_size, opt.batch_size, 
-                            cuda, opt.workers, opt.global_rank)
+                            cuda, opt.workers, False, opt.global_rank)
     testloader = dataset.testloader
     
     model = build_models(opt.model).to(device)    
     ckpt = torch.load(opt.weights, map_location=device)  # load checkpoint
-    #print(ckpt.keys())
     
-    #temp = ckpt['headandloss'].head
-    #ckpt['headandloss'].head = MixFace(in_feature=512, out_feature=350, e=1e-22, m=0.5, easy_margin=False)
-    #ckpt['headandloss'].head.weight = temp.weight
-
-    print(ckpt['headandloss'])
-    print(ckpt['headandloss'].head)
-    
-    #torch.save(ckpt, 'runs/face.mixface.1e-22m0.5/weights/' + opt.wname + '.pt')
-
     model_state_dict = ckpt['backbone'].float().state_dict()
     model.load_state_dict(model_state_dict, strict=False)
 
@@ -207,11 +197,11 @@ def inference(opt, device):
 
 def parser():    
     parser = argparse.ArgumentParser(description='Face Test')
-    parser.add_argument('--weights', type=str , default='', help='initial weights path')
-    parser.add_argument('--wname'  , type=str , default='best', help='initial weights name: best or last')
+    parser.add_argument('--weights', type=str , default='', help='pretrained weights path')
+    parser.add_argument('--wname'  , type=str , default='best', help='pretrained weights name: best or last')
     parser.add_argument('--dataset'           , default='kface', help='kface/face/merge')    
     parser.add_argument('--model'             , default='iresnet-34', help='iresnet-34')
-    parser.add_argument('--head'              , default='arcface', help='adacos, fixcos, ms-loss')
+    parser.add_argument('--head'              , default='arcface', help='e.g. arcface, sn-pair, ms-loss, mixface, etc.')
     parser.add_argument('--data_cfg', type=str, default='data/KFACE/kface.T4.yaml', help='data yaml path')
 
     parser.add_argument('--workers'           , type=int, default=4)

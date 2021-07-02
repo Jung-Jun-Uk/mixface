@@ -132,29 +132,35 @@ class BinDatasets(data.Dataset):
 
 
 class Face(object):
-    def __init__(self, config, batch_size, test_batch_size, cuda, workers, rank):
+    def __init__(self, config, batch_size, test_batch_size, cuda, workers, is_training, rank):
         if rank in [-1, 0]:
             print("Face processing .. ")
 
         with open(config) as f:
             cfg = yaml.load(f, Loader=yaml.FullLoader)  # model dict
         bin_path = cfg['bin_path']
-        
-        train_dataset = FaceDatasets(config=config, mode='train')
-        test_dataset = BinDatasets(bin_path=bin_path, config=config)
 
         pin_memory = True if cuda else False
 
-        train_sampler = torch.utils.data.distributed.DistributedSampler(train_dataset) if rank != -1 else None
-        trainloader = torch.utils.data.DataLoader(
-                            train_dataset, 
-                            batch_size=batch_size, 
-                            shuffle=(train_sampler is None),
-                            num_workers=workers, 
-                            pin_memory=pin_memory, 
-                            sampler=train_sampler)
-        
-        
+        if is_training:
+            train_dataset = FaceDatasets(config=config, mode='train')
+
+            train_sampler = torch.utils.data.distributed.DistributedSampler(train_dataset) if rank != -1 else None
+            trainloader = torch.utils.data.DataLoader(
+                                train_dataset, 
+                                batch_size=batch_size, 
+                                shuffle=(train_sampler is None),
+                                num_workers=workers, 
+                                pin_memory=pin_memory, 
+                                sampler=train_sampler)
+
+            self.trainloader = trainloader
+
+            self.num_classes = train_dataset.num_classes
+            self.num_training_images = len(train_dataset.information)
+
+
+        test_dataset = BinDatasets(bin_path=bin_path, config=config)        
         testloader = torch.utils.data.DataLoader(
                         test_dataset,                        
                         batch_size=test_batch_size, 
@@ -162,14 +168,10 @@ class Face(object):
                         num_workers=workers, 
                         pin_memory=pin_memory,
                         )
-        
-        self.trainloader = trainloader
+                
         self.testloader = testloader
         
-        self.num_classes = train_dataset.num_classes
-        self.num_training_images = len(train_dataset.information)
-        
-        if rank in [-1, 0]:
+        if is_training and rank in [-1, 0]:
             print("len trainloader", len(self.trainloader))
             print("len testloader", len(self.testloader))
 

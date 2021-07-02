@@ -221,7 +221,7 @@ def parser():
     parser.add_argument('--weights', type=str, default='', help='initial weights path')
     parser.add_argument('--dataset'           , default='kface', help='kface/face/merge')
     parser.add_argument('--model'             , default='iresnet-34', help='iresnet-34')
-    parser.add_argument('--head'              , default='arcface', help='adacos, fixcos, ms-loss')
+    parser.add_argument('--head'              , default='arcface', help='e.g. arcface, sn-pair, ms-loss, mixface, etc.')
     parser.add_argument('--resume', nargs='?', const=True, default=False, help='resume most recent training')
     parser.add_argument('--use_nsps'          , action='store_true', help='adds N+S Pair Similarity Loss')
     parser.add_argument('--data_cfg', type=str, default='data/kface.large.yaml', help='data yaml path')

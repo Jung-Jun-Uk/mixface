@@ -11,6 +11,7 @@ import torch.nn.functional as F
 
 def build_models(model_name):
     model_args = model_name.split('-')    
+    
     if model_args[0] == 'iresnet':
         _, net_depth = model_args
         model = iresnet(num_layers=int(net_depth))

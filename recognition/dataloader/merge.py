@@ -146,7 +146,7 @@ class MergeDatasets(data.Dataset): # kface + face
 
 
 class Merge(object):
-    def __init__(self, config, batch_size, test_batch_size, cuda, workers, rank):
+    def __init__(self, config, batch_size, test_batch_size, cuda, workers, is_training, rank):
         if rank in [-1, 0]:
             print("Merge Face processing .. ")
 
@@ -163,23 +163,28 @@ class Merge(object):
         eps = kface_expressions_converter(cfg['eps'])
         pose = kface_pose_converter(cfg['pose'])
 
-        train_dataset = MergeDatasets(config=config, mode='train')        
+        pin_memory = True if cuda else False
+
+        if is_training:
+            train_dataset = MergeDatasets(config=config, mode='train')        
+
+            train_sampler = torch.utils.data.distributed.DistributedSampler(train_dataset) if rank != -1 else None
+            trainloader = torch.utils.data.DataLoader(
+                                train_dataset, 
+                                batch_size=batch_size, 
+                                shuffle=(train_sampler is None),
+                                num_workers=workers, 
+                                pin_memory=pin_memory, 
+                                sampler=train_sampler)
+
+            self.trainloader = trainloader
+            self.num_classes = train_dataset.num_classes
+            self.num_training_images = len(train_dataset.information)
+
         test_dataset1 = BinDatasets(bin_path=bin_path, config=config)
         test_dataset2 = KFaceDatasets(data_path, test_idx_path, img_size, 
                                      acs, lux, eps, pose, mode='test', double=False)
 
-        pin_memory = True if cuda else False
-
-        train_sampler = torch.utils.data.distributed.DistributedSampler(train_dataset) if rank != -1 else None
-        trainloader = torch.utils.data.DataLoader(
-                            train_dataset, 
-                            batch_size=batch_size, 
-                            shuffle=(train_sampler is None),
-                            num_workers=workers, 
-                            pin_memory=pin_memory, 
-                            sampler=train_sampler)
-        
-        
         testloader1 = torch.utils.data.DataLoader(
                         test_dataset1,                        
                         batch_size=test_batch_size, 
@@ -195,14 +200,10 @@ class Merge(object):
                         num_workers=workers, 
                         pin_memory=pin_memory,
                         )
-
-        self.trainloader = trainloader
+        
         self.testloader = [testloader1, testloader2]
-        
-        self.num_classes = train_dataset.num_classes
-        self.num_training_images = len(train_dataset.information)
-        
-        if rank in [-1, 0]:
+                
+        if is_training and rank in [-1, 0]:
             print("len trainloader", len(self.trainloader))
             print("len lfw testloader", len(self.testloader[0]))
             print("len kface testloader", len(self.testloader[1]))

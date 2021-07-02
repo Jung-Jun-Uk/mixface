@@ -118,8 +118,8 @@ class KFaceDatasets(data.Dataset):
         return len(self.information)
 
 
-class KFace(object):
-    def __init__(self, config, batch_size, test_batch_size, cuda, workers, rank):
+class KFace(object):    
+    def __init__(self, config, batch_size, test_batch_size, cuda, workers, is_training, rank):
         if rank in [-1, 0]:
             print("KFace processing .. ")    
 
@@ -131,35 +131,41 @@ class KFace(object):
         self.test_pair_txt = cfg['test_pair_txt']
         img_size = cfg['img_size']
 
-        train_acs = kface_accessories_converter(cfg['train_acs'])
-        train_lux = kface_luces_converter(cfg['train_lux'])
-        train_eps = kface_expressions_converter(cfg['train_eps'])
-        train_pose = kface_pose_converter(cfg['train_pose'])
-
-        test_acs = kface_accessories_converter(cfg['test_acs'])
-        test_lux = kface_luces_converter(cfg['test_lux'])
-        test_eps = kface_expressions_converter(cfg['test_eps'])
-        test_pose = kface_pose_converter(cfg['test_pose'])
-
         double = cfg['double']
 
-        train_dataset = KFaceDatasets(data_path, test_idx_path, img_size, 
-                                      train_acs, train_lux, train_eps, train_pose, mode='train', double=double)
-        test_dataset = KFaceDatasets(data_path, test_idx_path, img_size, 
-                                     test_acs, test_lux, test_eps, test_pose, mode='test', double=False)
-        
         pin_memory = True if cuda else False
 
-        train_sampler = torch.utils.data.distributed.DistributedSampler(train_dataset) if rank != -1 else None
-        trainloader = torch.utils.data.DataLoader(
+        if is_training:
+            train_acs = kface_accessories_converter(cfg['train_acs'])
+            train_lux = kface_luces_converter(cfg['train_lux'])
+            train_eps = kface_expressions_converter(cfg['train_eps'])
+            train_pose = kface_pose_converter(cfg['train_pose'])
+
+            train_dataset = KFaceDatasets(data_path, test_idx_path, img_size, 
+                                    train_acs, train_lux, train_eps, train_pose, mode='train', double=double)
+
+            train_sampler = torch.utils.data.distributed.DistributedSampler(train_dataset) if rank != -1 else None
+
+            trainloader = torch.utils.data.DataLoader(
                             train_dataset, 
                             batch_size=batch_size, 
                             shuffle=(train_sampler is None),
                             num_workers=workers, 
                             pin_memory=pin_memory, 
                             sampler=train_sampler)
+
+            self.trainloader = trainloader
+            self.num_classes = train_dataset.num_classes
+            self.num_training_images = len(train_dataset.information)
+
+        test_acs = kface_accessories_converter(cfg['test_acs'])
+        test_lux = kface_luces_converter(cfg['test_lux'])
+        test_eps = kface_expressions_converter(cfg['test_eps'])
+        test_pose = kface_pose_converter(cfg['test_pose'])
         
-        
+        test_dataset = KFaceDatasets(data_path, test_idx_path, img_size, 
+                                     test_acs, test_lux, test_eps, test_pose, mode='test', double=False)
+                        
         testloader = torch.utils.data.DataLoader(
                         test_dataset,                        
                         batch_size=test_batch_size, 
@@ -167,14 +173,10 @@ class KFace(object):
                         num_workers=workers, 
                         pin_memory=pin_memory,
                         )
-        
-        self.trainloader = trainloader
+                
         self.testloader = testloader
-        
-        self.num_classes = train_dataset.num_classes
-        self.num_training_images = len(train_dataset.information)
-        
-        if rank in [-1, 0]:
+                
+        if is_training and rank in [-1, 0]:
             print("len trainloader", len(self.trainloader))
             print("len testloader", len(self.testloader))
             

@@ -102,11 +102,13 @@ For all experiments, [ResNet-34](https://arxiv.org/abs/1512.03385) was chosen as
 |[SN-pair (s=64)](https://koreatechackr-my.sharepoint.com/:u:/g/personal/rnans33_koreatech_ac_kr/Edch8gnpE2pDpE8OpzQ9OBEBCNNSlA8GV7iSLAvghVoVwQ?e=GRXyt4)|99.20|95.01|91.84|89.74|
 |[MixFace (e=1e-22, m=0.25)](https://koreatechackr-my.sharepoint.com/:u:/g/personal/rnans33_koreatech_ac_kr/EeVMBzPFGjNIrXDZJ9At33YBEp8UjLAdkge0koCOWeOrFg)|**100**|**96.37**|**92.36**|**89.80**|
 
+Note: For ArcFace, we tested (s,m)={(16,0.5), (32,0.25), (64,0.25), (32,0.5), (64,0.5)}, but the model was not trained properly.
+
 ```bash
 cd recognition
 
 # example
-python test.py --name 'mixface_1e-22-m0.25' --wname 'best' --dataset 'kface' --data_cfg 'data/KFACE/kface.T4.yaml'
+python test.py --weights 'kface.mixface.1e-22m0.25.best.pt' --dataset 'kface' --data_cfg 'data/KFACE/kface.T4.yaml'
 ```
 
 #### The model was trained on MS1M-R
@@ -120,7 +122,7 @@ python test.py --name 'mixface_1e-22-m0.25' --wname 'best' --dataset 'kface' --d
 cd recognition
 
 # example
-python test.py --name 'mixface_1e-22-m0.25' --wname 'best' --dataset 'kface' --data_cfg 'data/face.all.yaml'
+python test.py --weights 'face.mixface.1e-22m0.5.best.pt' --dataset 'face' --data_cfg 'data/face.all.yaml'
 ```
 
 #### The model was trained on MS1M-R+T4
@@ -134,7 +136,7 @@ python test.py --name 'mixface_1e-22-m0.25' --wname 'best' --dataset 'kface' --d
 cd recognition
 
 # example
-python test.py --name 'mixface_1e-22-m0.25' --wname 'best' --dataset 'kface' --data_cfg 'data/merge.yaml'
+python test.py --weights 'merge.mixface.1e-22m0.5.best.pt' --dataset 'merge' --data_cfg 'data/merge.yaml'
 ```
 
 ## Training
