@@ -18,4 +18,3 @@ test_eps: e1~3
 test_pose: c1~20   
 
 img_size: 112
-double: False

@@ -24,13 +24,13 @@ from dataloader.kface import KFaceDatasets
 
 
 class MergeDatasets(data.Dataset): # kface + face
-    def __init__(self, config='data/merge.yaml', mode='train'):
+    def __init__(self, config='data/merge.yaml', mode='train', double=False):
         assert mode in ['train', 'test']
         with open(config) as f:
             cfg = yaml.load(f, Loader=yaml.FullLoader)  # model dict
         
         self.mode = mode        
-        self.double = cfg['double']        
+        self.double = double
         self.kface_path = cfg['data_path']                 
         test_idx_path = cfg['test_idx_txt']
 
@@ -84,19 +84,23 @@ class MergeDatasets(data.Dataset): # kface + face
             self.info_dict_face = pickle.load(f)
         
         info = []
+        new_info_dict = {}
         label = 0        
         for img_path_lst in self.info_dict_kface.values():
             for img_path in img_path_lst:
                 info.append({'img_path' : img_path, 'label' : label})
+            new_info_dict[label] = img_path_lst
             label += 1
         for img_path_lst in self.info_dict_face.values():
             if len(img_path_lst) < min_image:
                 continue
             for img_path in img_path_lst:
                 info.append({'img_path' : img_path, 'label' : label})
+            new_info_dict[label] = img_path_lst
             label += 1
 
         self.information = info
+        self.info_dict = new_info_dict
         self.num_classes = label
 
         print("\nnMerge kface + face dataset {} dataset".format(mode))
@@ -126,7 +130,7 @@ class MergeDatasets(data.Dataset): # kface + face
 
     def __getitem__(self, index):
         info = self.information[index]
-        img_path = info['img_path']
+        img_path = info['img_path'] 
         label = info['label']
         img = Image.open(img_path)        
         if self.mode == 'train':
@@ -146,7 +150,7 @@ class MergeDatasets(data.Dataset): # kface + face
 
 
 class Merge(object):
-    def __init__(self, config, batch_size, test_batch_size, cuda, workers, is_training, rank):
+    def __init__(self, config, batch_size, test_batch_size, cuda, workers, is_training, double, rank):
         if rank in [-1, 0]:
             print("Merge Face processing .. ")
 
@@ -166,7 +170,7 @@ class Merge(object):
         pin_memory = True if cuda else False
 
         if is_training:
-            train_dataset = MergeDatasets(config=config, mode='train')        
+            train_dataset = MergeDatasets(config=config, mode='train', double=double)        
 
             train_sampler = torch.utils.data.distributed.DistributedSampler(train_dataset) if rank != -1 else None
             trainloader = torch.utils.data.DataLoader(

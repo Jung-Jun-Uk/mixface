@@ -20,11 +20,11 @@ sys.path.append('./')  # to run '$ python *.py' files in subdirectories
 from dataloader.utils import create_face_dataset
 
 class FaceDatasets(data.Dataset):
-    def __init__(self, config='data/kface.yaml', mode='train'):
+    def __init__(self, config='data/kface.yaml', mode='train', double=False):
         assert mode in ['train', 'test']
         with open(config) as f:
             cfg = yaml.load(f, Loader=yaml.FullLoader)  # model dict
-        self.double = cfg['double']
+        self.double = double
         self.mode = mode
         self.data_path = cfg['ms1m_path'] 
         img_size = cfg['img_size']
@@ -38,14 +38,17 @@ class FaceDatasets(data.Dataset):
             self.info_dict = pickle.load(f)
         
         info = []
+        new_info_dict = {}
         label = 0
         for img_path_lst in self.info_dict.values():
             if len(img_path_lst) < min_image:
                 continue
             for img_path in img_path_lst:
                 info.append({'img_path' : img_path, 'label' : label})
+            new_info_dict[label] = img_path_lst
             label += 1
         self.information = info
+        self.info_dict = new_info_dict
         self.num_classes = label
 
         print("\nCreat kface {} dataset".format(mode))
@@ -132,7 +135,7 @@ class BinDatasets(data.Dataset):
 
 
 class Face(object):
-    def __init__(self, config, batch_size, test_batch_size, cuda, workers, is_training, rank):
+    def __init__(self, config, batch_size, test_batch_size, cuda, workers, is_training, double, rank):
         if rank in [-1, 0]:
             print("Face processing .. ")
 
@@ -143,7 +146,7 @@ class Face(object):
         pin_memory = True if cuda else False
 
         if is_training:
-            train_dataset = FaceDatasets(config=config, mode='train')
+            train_dataset = FaceDatasets(config=config, mode='train', double=double)
 
             train_sampler = torch.utils.data.distributed.DistributedSampler(train_dataset) if rank != -1 else None
             trainloader = torch.utils.data.DataLoader(
@@ -176,4 +179,4 @@ class Face(object):
             print("len testloader", len(self.testloader))
 
 if __name__ == "__main__":
-    Face(config='data/kface.yaml', batch_size=512, test_batch_size=512, cuda=True, workers=4, rank=-1)
+    pass

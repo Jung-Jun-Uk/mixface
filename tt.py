@@ -1,3 +1,6 @@
-a = 'weights.pt'
+import torch
+from yaml import nodes
 
-print(a[-3:])
+nodrop = False
+
+print(not nodrop)

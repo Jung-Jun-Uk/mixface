@@ -9,12 +9,12 @@ from torch import nn
 import torch.nn.functional as F
 
 
-def build_models(model_name):
+def build_models(model_name, nodrop=False):
     model_args = model_name.split('-')    
     
     if model_args[0] == 'iresnet':
         _, net_depth = model_args
-        model = iresnet(num_layers=int(net_depth))
+        model = iresnet(num_layers=int(net_depth), drop_lastfc=not nodrop)
     return model
 
     
@@ -70,7 +70,10 @@ class HeadAndLoss(nn.Module):
                 hard_pairs = self.miner(deep_features, labels)
                 loss = self.head(deep_features, labels, hard_pairs)
             else:
-                loss = self.head(deep_features, labels)        
+                loss = self.head(deep_features, labels)   
+        elif self.head_name in ['mixface']:
+            outputs, outputs_pair, re_labels = self.head(deep_features, labels)
+            loss = self.criterion(outputs, labels) + self.criterion(outputs_pair, re_labels)
         return loss    
         
         

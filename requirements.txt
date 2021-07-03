@@ -4,3 +4,4 @@ PyYAML
 albumentations
 pytorch-metric-learning
 mxnet
+torchtoolbox

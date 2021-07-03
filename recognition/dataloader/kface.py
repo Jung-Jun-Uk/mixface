@@ -119,7 +119,7 @@ class KFaceDatasets(data.Dataset):
 
 
 class KFace(object):    
-    def __init__(self, config, batch_size, test_batch_size, cuda, workers, is_training, rank):
+    def __init__(self, config, batch_size, test_batch_size, cuda, workers, is_training, double, rank):
         if rank in [-1, 0]:
             print("KFace processing .. ")    
 
@@ -130,9 +130,7 @@ class KFace(object):
         test_idx_path = cfg['test_idx_txt']
         self.test_pair_txt = cfg['test_pair_txt']
         img_size = cfg['img_size']
-
-        double = cfg['double']
-
+        
         pin_memory = True if cuda else False
 
         if is_training:

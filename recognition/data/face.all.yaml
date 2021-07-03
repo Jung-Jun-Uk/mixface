@@ -8,5 +8,3 @@ preprocessed_file: data/ms1m-retinaface-t1.pickle
 min_img: 0
 img_size: 112
 
-#if you train with the metric loss(e.g. sn-pair, n-pair) on MS1M-R or MS1M-R+T4, double:True
-double: False # data sampling strategy 

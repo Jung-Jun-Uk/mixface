@@ -73,11 +73,11 @@ def main(opt, device):
     else:
         dcfg = data_cfg    
 
-    dataset = load_datasets(opt.dataset, dcfg, opt.batch_size, opt.total_batch_size, 
-                            cuda, opt.workers, opt.global_rank)
+    dataset = load_datasets(opt.dataset, opt.data_cfg, opt.batch_size, opt.total_batch_size, 
+                            cuda, opt.workers, True, opt.double, opt.global_rank)
     trainloader, testloader = dataset.trainloader, dataset.testloader
     
-    model = build_models(opt.model).to(device)
+    model = build_models(opt.model, opt.nodrop).to(device)
     criterion = nn.CrossEntropyLoss()
     #criterion = LabelSmoothingLoss(dataset.num_classes, smoothing=0.1)
     headandloss = HeadAndLoss(criterion=criterion, head_name=opt.head, in_feature=512, num_classes=dataset.num_classes, cfg=head_cfg).to(device)
@@ -93,9 +93,9 @@ def main(opt, device):
         
     if cuda and opt.global_rank == -1 and torch.cuda.device_count() > 1:
         model = torch.nn.DataParallel(model)
-
+        
     if cuda and opt.global_rank != -1:
-        model = DDP(model, device_ids=[opt.local_rank], output_device=opt.local_rank)
+        model = DDP(model, device_ids=[opt.local_rank], output_device=opt.local_rank, find_unused_parameters=True)
         
     if opt.global_rank in [-1, 0]:
         print("Creat model  : {}".format(opt.model))
@@ -108,8 +108,8 @@ def main(opt, device):
     scheduler = CosineWarmupLr(optimizer, batches_per_epoch, opt.max_epoch, base_lr=hyp['lr'], warmup_epochs=hyp['warmup_epochs'])
     #scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=hyp['milestones'], gamma=hyp['gamma'])
     opt.scaler = torch.cuda.amp.GradScaler(enabled=True)
-
-    # Resume
+    
+    # Resume    
     best_vacc, best_vth = 0.0, 0.0
     if pretrained:
         # Optimizer
@@ -121,28 +121,24 @@ def main(opt, device):
         best_vth = ckpt['best_vthreshold']
         opt.start_epoch = ckpt['epoch'] + 1
         del ckpt, model_state_dict, head_state_dict
-
-    opt.double = data_cfg['double']
+    
     for epoch in range(opt.start_epoch, opt.max_epoch):
         if opt.global_rank != -1:
             trainloader.sampler.set_epoch(epoch)
         if opt.global_rank in [-1, 0]:
             print("==> Epoch {}/{}".format(epoch+1, opt.max_epoch))
-
-        #train(opt, model, headandloss, optimizer, scheduler, trainloader, epoch, device, opt.global_rank)
-        train(opt, model, headandloss, optimizer, scheduler, trainloader, testloader, epoch, device, opt.global_rank)
-        #scheduler.step()
-        #if epoch < 18:
-        #    continue
-
+        
+        train(opt, model, headandloss, optimizer, scheduler, trainloader, device, opt.global_rank)        
+        #scheduler.step() # only use MultiStepLR
+        
         if opt.global_rank in [-1, 0]:
             if opt.dataset == 'kface':
                 vacc, vth, extract_info = kevaluation(model, testloader, device, test_pair_txt=data_cfg['test_pair_txt'], is_training=True)        
             elif opt.dataset == 'face':
-                vacc, vth = evaluation(model, testloader, 'lfw', device)
+                vacc, vth = evaluation(model, testloader, device)
             elif opt.dataset == 'merge':
                 testloader1, testloader2 = testloader
-                vacc1, vth1 = evaluation(model, testloader1, 'lfw', device)
+                vacc1, vth1 = evaluation(model, testloader1, device)
                 vacc2, vth2, extract_info = kevaluation(model, testloader2, device, test_pair_txt=data_cfg['test_pair_txt'], is_training=True)                
                 vacc = vacc1
                 vth = vth1
@@ -180,30 +176,30 @@ def main(opt, device):
             del ckpt
 
     
-def train(opt, model, headandloss, optimizer, scheduler, trainloader, testloader, epoch, device, rank):
+def train(opt, model, headandloss, optimizer, scheduler, trainloader, device, rank):
     model.train()
-    losses = AverageMeter()
-    #miner = miners.MultiSimilarityMiner()
+    losses = AverageMeter()    
     start_time = time.time() 
-    for i, batch in enumerate(trainloader):
-        if opt.double:
+    for i, batch in enumerate(trainloader):        
+        if opt.double: # if you train with the metric loss(e.g. sn-pair, n-pair) on MS1M-R or MS1M-R+T4, double:True
             data1, data2, labels = batch            
             data1, data2, labels = data1.to(device), data2.to(device), labels.to(device)
             data, labels = torch.cat((data1, data2), dim=0), torch.cat((labels, labels), dim=0)
         else:
             data, labels = batch            
             data, labels = data.to(device), labels.to(device)
-            
+        
         optimizer.zero_grad()
-
+        
         with torch.cuda.amp.autocast():
-            deep_features = model(data)
+            deep_features = model(data)            
             loss = headandloss(deep_features, labels)
             
         opt.scaler.scale(loss).backward()
+
         opt.scaler.step(optimizer)
         opt.scaler.update()
-        scheduler.step()
+        scheduler.step() # only use CosineWarmupLr
 
         losses.update(loss.item(), labels.size(0))
         if (i+1) % opt.print_freq == 0 and rank in [-1, 0]:
@@ -211,22 +207,22 @@ def train(opt, model, headandloss, optimizer, scheduler, trainloader, testloader
             start_time = time.time()
             print("Batch {}/{}\t Loss {:.6f} ({:.6f}) elapsed time (h:m:s): {}" \
                 .format(i+1, len(trainloader), losses.val, losses.avg, elapsed))
-            
-        #if (i+1) % 5000 == 0:
-        #    vacc, vth = evaluation(model, testloader, 'lfw', device)
-        #    model.train()
+            break
         
 def parser():    
     parser = argparse.ArgumentParser(description='Face training')
     parser.add_argument('--weights', type=str, default='', help='initial weights path')
     parser.add_argument('--dataset'           , default='kface', help='kface/face/merge')
     parser.add_argument('--model'             , default='iresnet-34', help='iresnet-34')
-    parser.add_argument('--head'              , default='arcface', help='e.g. arcface, sn-pair, ms-loss, mixface, etc.')
+    parser.add_argument('--head'              , default='arcface', help='e.g. arcface, sn-pair-loss, ms-loss, mixface, etc.')
     parser.add_argument('--resume', nargs='?', const=True, default=False, help='resume most recent training')
     parser.add_argument('--use_nsps'          , action='store_true', help='adds N+S Pair Similarity Loss')
-    parser.add_argument('--data_cfg', type=str, default='data/kface.large.yaml', help='data yaml path')
-    parser.add_argument('--hyp', type=str, default='data/kface.hyp.yaml', help='hyperparameters path')
+    parser.add_argument('--data_cfg', type=str, default='data/KFACE/kface.T4.yaml', help='data yaml path')
+    parser.add_argument('--hyp', type=str, default='data/face.hyp.yaml', help='hyperparameters path')
     parser.add_argument('--head_cfg', type=str, default='models/head.kface.cfg.yaml', help='head config path')
+    
+    parser.add_argument('--double', action='store_true', help='data sampling strategy')
+    parser.add_argument('--nodrop', action='store_true', help='Do not apply dropout to last fc layer')
 
     parser.add_argument('--workers'          , type=int, default=4)
     parser.add_argument('--batch_size'       , type=int, default=512)
@@ -238,7 +234,7 @@ def parser():
     #parser.add_argument('--resume', action='store_true')
     parser.add_argument('--nlog', action='store_true', help='nlog = not print log.txt')
     parser.add_argument('--device', default='', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
-    parser.add_argument('--project', default='runs/inner-attribute', help='save to project/name')
+    parser.add_argument('--project', default='runs', help='save to project/name')
     parser.add_argument('--name', default='exp', help='save to project/name')
     parser.add_argument('--exist-ok', action='store_true', help='existing project/name ok, do not increment')
 
@@ -252,7 +248,7 @@ def parser():
 # distributed parallel script:  python -m torch.distributed.launch --nproc_per_node 4 train.py
 if __name__ == "__main__":    
     opt = parser()
-    opt.save_dir = increment_path(Path(opt.project) / opt.dataset / (opt.model + '-' + opt.head) / opt.name, exist_ok=opt.exist_ok)  # increment run
+    opt.save_dir = increment_path(Path(opt.project) / (opt.dataset +'.'+ opt.model + '.' + opt.head +'.'+ opt.name), exist_ok=opt.exist_ok)  # increment run
 
     # Set DDP variables
     opt.total_batch_size = opt.batch_size

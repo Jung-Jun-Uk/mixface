@@ -59,7 +59,6 @@ cd detection
 
 python align_kfaces.py --ori_data_path '/data/FACE/KFACE/High' --detected_data_path 'kface_retina_align_112x112'
 ```
-The detection module referenced [https://github.com/biubug6/Pytorch_Retinaface](https://github.com/biubug6/Pytorch_Retinaface).
 
 #### Training and test datasets on K-FACE 
 |Train ID|Accessories|Lux|Expression|Pose|#Image|Variance|
@@ -91,9 +90,6 @@ cd detection
 python rec2image.py --include '/data/FACE/ms1m-retinaface-t1/' --output 'MS1M-RetinaFace'
 ```
 
-The script referenced [https://github.com/deepinsight/insightface](https://github.com/deepinsight/insightface).
-
-
 ## Inference
 
 After downloading the pretrained model, run `test.py`.
@@ -110,7 +106,7 @@ For all experiments, [ResNet-34](https://arxiv.org/abs/1512.03385) was chosen as
 
 Note: 
 
-+ For ArcFace, we tested (s,m)={(16,0.5), (32,0.25), (64,0.25), (32,0.5), (64,0.5)}, but the model was not trained properly So, we apply (s,m)=(16,0.25).
++ For ArcFace, We tested (s,m)={(16,0.5), (32,0.25), (64,0.25), (32,0.5), (64,0.5)}, but the model was not trained properly So, we apply (s,m)=(16,0.25).
 
 ```bash
 cd recognition
@@ -125,10 +121,6 @@ python test.py --weights 'kface.mixface.1e-22m0.25.best.pt' --dataset 'kface' --
 |[ArcFace (s=64, m=0.5)](https://koreatechackr-my.sharepoint.com/:u:/g/personal/rnans33_koreatech_ac_kr/EYVV1dGA11pHtMU224i3rRYB_dUPdJB0VsHxTiOjz_h5YA?e=OioJXq)|**98.71**|**86.60**|**82.03**|**99.80**|**98.41**|**98.80**|
 |[SN-pair (s=64)](https://koreatechackr-my.sharepoint.com/:u:/g/personal/rnans33_koreatech_ac_kr/EYMHsaIBxU5KsICPRa_y8vkBGQmM8f81o7YpuNkoEgr11w?e=uV01Vp)|92.85|76.36|70.08|99.55|96.20|95.46|
 |[MixFace (e=1e-22, m=0.5)](https://koreatechackr-my.sharepoint.com/:u:/g/personal/rnans33_koreatech_ac_kr/EQ-8bjuohCdCuPLMW__R2yMBaLUBH8J7s3j_gVfk6SQ6qA?e=dScyfb)|97.36|82.89|76.95|99.68|97.74|97.25|
-
-Note: 
-
-+ When you train with the metric loss(e.g. SN-pair, N-pair, etc) on MS1M-R, don't use the dropout function of line number 204 of the [code](https://github.com/Jung-Jun-Uk/insightKface_pytorch/blob/main/recognition/models/iresnet.py) because the model is not trained properly.
 
 ```bash
 cd recognition
@@ -146,7 +138,6 @@ python test.py --weights 'face.mixface.1e-22m0.5.best.pt' --dataset 'face' --dat
 
 Note: 
 + For ArcFace, we tested (s,m)={(8, 0.5), (16, 0.25), (16,0.5), (32,0.25), (64,0.25), (32,0.5), (64,0.5)}, but the model was not trained properly So, we apply (s,m)=(8,0.25).
-+ When you train with the metric loss(e.g. SN-pair, N-pair, etc) on MS1M-R+T4, don't use the dropout function of line number 204 of the [code](https://github.com/Jung-Jun-Uk/insightKface_pytorch/blob/main/recognition/models/iresnet.py) because the model is not trained properly. 
 
 ```bash
 cd recognition
@@ -156,3 +147,36 @@ python test.py --weights 'merge.mixface.1e-22m0.5.best.pt' --dataset 'merge' --d
 ```
 
 ## Training
+### Multi-GPU DataParallel Mode
+#### Example script for training on KFACE
+```bash
+cd recognition
+
+# example 
+python train.py --dataset 'kface' --head 'mixface' --data_cfg 'data/KFACE/kface.T4.yaml' --hyp 'data/face.hyp.yaml' --head_cfg 'models/head.kface.cfg.yaml' --name 'example' --device 0,1
+```
+
+### Multi-GPU DistributedDataParallel Mode
+#### Example script for training on KFACE
+```bash
+cd recognition
+
+# example
+python -m torch.distributed.launch --nproc_per_node 2 train.py --dataset 'kface' --head 'mixface' --data_cfg 'data/KFACE/kface.T4.yaml' --hyp 'data/face.hyp.yaml' --head_cfg 'models/head.kface.cfg.yaml' --name 'example' --device 0,1
+```
+
+Note:
+
++ For MS1M-R, change args ```--dataset face```, ```--data_cfg data/face.all.yaml```, and ```--head_cfg model/head.face.cfg.yaml```.
++ For MS1M-R+T4, change args ```--dataset merge```, ```--data_cfg data/merge.yaml```, and ```--head_cfg model/head.merge.cfg.yaml```.
++ The args ```--nodrop``` should be used if you train with the metric loss(e.g., SN-pair, N-pair, etc.) on MS1M-R or MS1M-R+T4.
++ The args ```--double``` should be used if you train with the metric loss(e.g., SN-pair, N-pair, etc.) or MixFace on MS1M-R or MS1M-R+T4.
++ DistributedDataParallel is only available to classification loss(e.g., arcface, cosface, etc.)
+
+## Reference code
+
+Thanks for these source codes porviding me with knowledges to complete this repository.
+
+1. [https://github.com/biubug6/Pytorch_Retinaface](https://github.com/biubug6/Pytorch_Retinaface).
+2. [https://github.com/deepinsight/insightface](https://github.com/deepinsight/insightface).
+3. [https://github.com/ultralytics/yolov5](https://github.com/ultralytics/yolov5)
