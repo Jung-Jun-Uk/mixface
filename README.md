@@ -100,7 +100,7 @@ For all experiments, [ResNet-34](https://arxiv.org/abs/1512.03385) was chosen as
 #### The model was trained on KFACE
 |Head&Loss|Q1|Q2|Q3|Q4|
 |:---:|:---:|:---:|:---:|:---:|
-|[ArcFace (s=16, m=0.25)](https://koreatechackr-my.sharepoint.com/:u:/g/personal/rnans33_koreatech_ac_kr/EZ6jsWQ49hhPqvx2TJYsMtsBj2tggTRBuqLtFW6nEaERgw?e=Frg8Z1)|98.50|95.33|86.60|79.42|-|
+|[ArcFace (s=16, m=0.25)](https://koreatechackr-my.sharepoint.com/:u:/g/personal/rnans33_koreatech_ac_kr/Ee3EOQUP19BDm4YXJsArmmEBKMiF394NNB7qmG6fcNqqEA?e=ch0ODQ)|98.30|94.77|87.87|85.41|-|
 |[SN-pair (s=64)](https://koreatechackr-my.sharepoint.com/:u:/g/personal/rnans33_koreatech_ac_kr/Edch8gnpE2pDpE8OpzQ9OBEBCNNSlA8GV7iSLAvghVoVwQ?e=GRXyt4)|99.20|95.01|91.84|89.74|
 |[MixFace (e=1e-22, m=0.25)](https://koreatechackr-my.sharepoint.com/:u:/g/personal/rnans33_koreatech_ac_kr/EeVMBzPFGjNIrXDZJ9At33YBEp8UjLAdkge0koCOWeOrFg)|**100**|**96.37**|**92.36**|**89.80**|
 
